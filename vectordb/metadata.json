@@ -1,0 +1,14 @@
+[
+  {
+    "source_file": "custom",
+    "chunk_file": "chunked_text.txt.txt"
+  },
+  {
+    "source_file": "custom",
+    "chunk_file": "chunk_0001.txt"
+  },
+  {
+    "source_file": "custom",
+    "chunk_file": "chunk_0002.txt"
+  }
+]

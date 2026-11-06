@@ -1,0 +1,4 @@
+This folder contains chunked text data (500 words with 80-word overlap)
+used for embedding and retrieval.
+
+Only sample chunks are included.

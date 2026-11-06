@@ -1,0 +1,1832 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LawyerBot — Kerala Legal AI</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@300;400;500&family=Mulish:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --bg: #f7f9fc;
+      --s1: #ffffff;
+      --s2: #f4f7fb;
+      --s3: #eef3f9;
+      --s4: #e6edf7;
+      --b1: #d8e2ef;
+      --b2: #c4d2e3;
+      --gold: #2563eb;
+      --gold2: #1d4ed8;
+      --goldf: rgba(200, 149, 46, 0.1);
+      --text: #172033;
+      --dim: #5f6f85;
+      --muted: #8290a3;
+      --civil: #3b82f6;
+      --crim: #ef4444;
+      --motor: #f97316;
+      --const: #22c55e;
+      --cyber: #a855f7;
+      --custom: #06b6d4;
+      --r: 14px;
+    }
+
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Mulish', sans-serif;
+      background: var(--bg);
+      color: var(--text)
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(ellipse 55% 35% at 15% 5%, rgba(37, 99, 235, .055) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 30% at 88% 92%, rgba(37, 99, 235, .035) 0%, transparent 55%);
+    }
+
+    /* ── LAYOUT ── */
+    .app {
+      display: flex;
+      height: 100vh;
+      position: relative;
+      z-index: 1
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 250px;
+      min-width: 250px;
+      background: var(--s1);
+      border-right: 1px solid var(--b1);
+      display: flex;
+      flex-direction: column;
+      animation: sideIn .5s ease both
+    }
+
+    @keyframes sideIn {
+      from {
+        transform: translateX(-16px);
+        opacity: 0
+      }
+
+      to {
+        transform: none;
+        opacity: 1
+      }
+    }
+
+    .logo-block {
+      padding: 20px 18px 16px;
+      border-bottom: 1px solid var(--b1)
+    }
+
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      margin-bottom: 5px
+    }
+
+    .logo-emblem {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(145deg, #2563eb, #1e40af);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 4px 18px rgba(37, 99, 235, .25);
+      flex-shrink: 0
+    }
+
+    .logo-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--gold2);
+      letter-spacing: .02em;
+      line-height: 1
+    }
+
+    .logo-sub {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      margin-top: 2px
+    }
+
+    .logo-tagline {
+      font-size: 10.5px;
+      color: var(--dim);
+      line-height: 1.5;
+      padding-left: 2px
+    }
+
+    .nav-label {
+      padding: 14px 18px 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: .2em;
+      text-transform: uppercase
+    }
+
+    .cat {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      margin: 2px 8px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all .2s;
+      background: none;
+      width: calc(100% - 16px);
+      text-align: left
+    }
+
+    .cat:hover {
+      background: var(--s3);
+      color: var(--text)
+    }
+
+    .cat.active {
+      background: var(--goldf);
+      border-color: rgba(37, 99, 235, .18);
+      color: var(--gold2)
+    }
+
+    .cat-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      box-shadow: 0 0 6px currentColor
+    }
+
+    .cat-dot.civil {
+      background: var(--civil);
+      color: var(--civil)
+    }
+
+    .cat-dot.crim {
+      background: var(--crim);
+      color: var(--crim)
+    }
+
+    .cat-dot.motor {
+      background: var(--motor);
+      color: var(--motor)
+    }
+
+    .cat-dot.const {
+      background: var(--const);
+      color: var(--const)
+    }
+
+    .cat-dot.cyber {
+      background: var(--cyber);
+      color: var(--cyber)
+    }
+
+    .cat-dot.custom {
+      background: var(--custom);
+      color: var(--custom)
+    }
+
+    .cat-label {
+      flex: 1
+    }
+
+    .cat-name {
+      font-size: 12.5px;
+      font-weight: 500;
+      color: inherit;
+      line-height: 1.2
+    }
+
+    .cat-hint {
+      font-size: 9.5px;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+      margin-top: 1px
+    }
+
+    .cat.active .cat-hint {
+      color: rgba(37, 99, 235, .55)
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      border-top: 1px solid var(--b1);
+      padding: 12px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px
+    }
+
+    .sf-btn {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 10px;
+      border-radius: 9px;
+      background: none;
+      border: 1px solid var(--b1);
+      color: var(--dim);
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      letter-spacing: .04em;
+      transition: all .2s;
+      width: 100%
+    }
+
+    .sf-btn:hover {
+      border-color: var(--gold);
+      color: var(--gold2);
+      background: var(--goldf)
+    }
+
+    .sf-btn span {
+      font-size: 15px
+    }
+
+    /* ── MAIN ── */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: mainIn .5s .1s ease both
+    }
+
+    @keyframes mainIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    .topbar {
+      padding: 13px 20px;
+      border-bottom: 1px solid var(--b1);
+      background: var(--s1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0
+    }
+
+    .topic-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--goldf);
+      border: 1px solid rgba(37, 99, 235, .18);
+      border-radius: 20px;
+      padding: 5px 14px
+    }
+
+    .topic-pulse {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--gold2);
+      box-shadow: 0 0 7px var(--gold);
+      animation: pulse 2s infinite
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .4
+      }
+    }
+
+    .topic-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--gold2);
+      letter-spacing: .06em
+    }
+
+    .topbar-actions {
+      display: flex;
+      gap: 7px
+    }
+
+    .tb-btn {
+      background: none;
+      border: 1px solid var(--b1);
+      border-radius: 8px;
+      color: var(--dim);
+      cursor: pointer;
+      padding: 6px 13px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: .04em;
+      transition: all .2s
+    }
+
+    .tb-btn:hover {
+      border-color: var(--gold);
+      color: var(--gold2);
+      background: var(--goldf)
+    }
+
+    /* ── SPLIT ── */
+    .split {
+      flex: 1;
+      display: flex;
+      overflow: hidden
+    }
+
+    .chat-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden
+    }
+
+    /* ── MESSAGES ── */
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 22px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      scroll-behavior: smooth
+    }
+
+    .messages::-webkit-scrollbar {
+      width: 4px
+    }
+
+    .messages::-webkit-scrollbar-thumb {
+      background: var(--b2);
+      border-radius: 2px
+    }
+
+    /* welcome */
+    .welcome {
+      align-self: center;
+      margin: auto;
+      max-width: 520px;
+      text-align: center;
+      animation: msgIn .5s ease both
+    }
+
+    .welcome-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      filter: drop-shadow(0 4px 12px rgba(37, 99, 235, .25))
+    }
+
+    .welcome h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--gold2);
+      margin-bottom: 8px;
+      letter-spacing: .02em
+    }
+
+    .welcome p {
+      font-size: 13px;
+      color: var(--dim);
+      line-height: 1.75;
+      margin-bottom: 20px
+    }
+
+    .welcome-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center
+    }
+
+    .wchip {
+      background: var(--s2);
+      border: 1px solid var(--b1);
+      border-radius: 20px;
+      padding: 7px 14px;
+      font-size: 11.5px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--dim);
+      cursor: pointer;
+      transition: all .2s;
+      letter-spacing: .02em
+    }
+
+    .wchip:hover {
+      border-color: var(--gold);
+      color: var(--gold2);
+      background: var(--goldf);
+      transform: translateY(-2px)
+    }
+
+    /* messages */
+    .msg {
+      display: flex;
+      gap: 12px;
+      max-width: 88%;
+      animation: msgIn .3s ease both
+    }
+
+    @keyframes msgIn {
+      from {
+        opacity: 0;
+        transform: translateY(7px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    .msg.user {
+      align-self: flex-end;
+      flex-direction: row-reverse
+    }
+
+    .msg.bot {
+      align-self: flex-start
+    }
+
+    .av {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+      margin-top: 2px
+    }
+
+    .msg.bot .av {
+      background: linear-gradient(135deg, #2a1e08, #180f02);
+      border: 1.5px solid rgba(37, 99, 235, .25);
+      color: var(--gold)
+    }
+
+    .msg.user .av {
+      background: linear-gradient(135deg, #eaf2ff, #dbeafe);
+      border: 1.5px solid #b9d0f2;
+      color: #2563eb
+    }
+
+    .msg-body {
+      display: flex;
+      flex-direction: column;
+      gap: 4px
+    }
+
+    .msg-meta {
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--muted);
+      padding: 0 4px;
+      letter-spacing: .04em
+    }
+
+    .msg.user .msg-meta {
+      text-align: right
+    }
+
+    .bubble {
+      padding: 13px 17px;
+      border-radius: var(--r);
+      font-size: 13.5px;
+      line-height: 1.4;
+      white-space: pre-wrap;
+      word-break: break-word;
+      position: relative
+    }
+
+    .msg.bot .bubble {
+      background: var(--s2);
+      border: 1px solid var(--b1);
+      border-bottom-left-radius: 4px;
+      color: var(--text)
+    }
+
+    .msg.user .bubble {
+      background: #eaf2ff;
+      border: 1px solid #b9d0f2;
+      border-bottom-right-radius: 4px;
+      color: #1e40af
+    }
+
+    .cat-tag {
+      display: inline-block;
+      font-size: 9px;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 6px 9px;
+      border-radius: px;
+      margin-bottom: 9px
+    }
+
+    .tag-civil {
+      background: rgba(59, 130, 246, .12);
+      color: #74b3f8;
+      border: 1px solid rgba(59, 130, 246, .2)
+    }
+
+    .tag-crim {
+      background: rgba(239, 68, 68, .12);
+      color: #f98080;
+      border: 1px solid rgba(239, 68, 68, .2)
+    }
+
+    .tag-motor {
+      background: rgba(249, 115, 22, .12);
+      color: #faa06a;
+      border: 1px solid rgba(249, 115, 22, .2)
+    }
+
+    .tag-const {
+      background: rgba(34, 197, 94, .12);
+      color: #5edc85;
+      border: 1px solid rgba(34, 197, 94, .2)
+    }
+
+    .tag-cyber {
+      background: rgba(168, 85, 247, .12);
+      color: #ca90fa;
+      border: 1px solid rgba(168, 85, 247, .2)
+    }
+
+    .tag-custom {
+      background: rgba(6, 182, 212, .12);
+      color: #44cfe8;
+      border: 1px solid rgba(6, 182, 212, .2)
+    }
+
+    /* sources tag */
+    .sources-line {
+      margin-top: 4px;
+      padding-top: 8px;
+      border-top: 1px solid var(--b1);
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--muted);
+      letter-spacing: .03em
+    }
+
+    .sources-line span {
+      color: rgba(37, 99, 235, .65)
+    }
+
+    .bubble-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 9px;
+      opacity: 0;
+      transition: opacity .2s
+    }
+
+    .bubble:hover .bubble-actions {
+      opacity: 1
+    }
+
+    .bact {
+      background: none;
+      border: 1px solid var(--b2);
+      border-radius: 6px;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9.5px;
+      cursor: pointer;
+      padding: 3px 8px;
+      transition: all .2s;
+      letter-spacing: .04em
+    }
+
+    .bact:hover {
+      color: var(--gold2);
+      border-color: rgba(37, 99, 235, .25);
+      background: var(--goldf)
+    }
+
+    /* typing */
+    .typing-wrap {
+      display: flex;
+      gap: 12px;
+      align-self: flex-start;
+      animation: msgIn .3s ease both
+    }
+
+    .typing-av {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2a1e08, #180f02);
+      border: 1.5px solid rgba(37, 99, 235, .25);
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px
+    }
+
+    .typing-bub {
+      background: var(--s2);
+      border: 1px solid var(--b1);
+      border-radius: var(--r);
+      border-bottom-left-radius: 4px;
+      padding: 14px 18px;
+      display: flex;
+      gap: 5px;
+      align-items: center
+    }
+
+    .typing-bub span {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      animation: tdot 1.2s infinite
+    }
+
+    .typing-bub span:nth-child(1) {
+      background: var(--gold);
+      animation-delay: 0s
+    }
+
+    .typing-bub span:nth-child(2) {
+      background: #aaa;
+      animation-delay: .2s
+    }
+
+    .typing-bub span:nth-child(3) {
+      background: #666;
+      animation-delay: .4s
+    }
+
+    @keyframes tdot {
+
+      0%,
+      60%,
+      100% {
+        transform: translateY(0);
+        opacity: .3
+      }
+
+      30% {
+        transform: translateY(-6px);
+        opacity: 1
+      }
+    }
+
+    /* suggestions */
+    .sug-bar {
+      padding: 0 20px 10px;
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      flex-shrink: 0
+    }
+
+    .sug {
+      background: var(--s2);
+      border: 1px solid var(--b1);
+      border-radius: 20px;
+      padding: 6px 13px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--dim);
+      cursor: pointer;
+      transition: all .2s;
+      letter-spacing: .025em;
+      white-space: nowrap
+    }
+
+    .sug:hover {
+      border-color: var(--gold);
+      color: var(--gold2);
+      background: var(--goldf);
+      transform: translateY(-1px)
+    }
+
+    /* input */
+    .input-area {
+      padding: 12px 16px;
+      border-top: 1px solid var(--b1);
+      background: var(--s1);
+      flex-shrink: 0
+    }
+
+    .disclaimer {
+      text-align: center;
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--muted);
+      margin-bottom: 9px;
+      letter-spacing: .04em
+    }
+
+    .disclaimer em {
+      color: rgba(37, 99, 235, .5);
+      font-style: normal
+    }
+
+    .input-row {
+      display: flex;
+      gap: 9px;
+      align-items: flex-end;
+      background: var(--bg);
+      border: 1px solid var(--b2);
+      border-radius: var(--r);
+      padding: 10px 13px;
+      transition: border-color .2s, box-shadow .2s
+    }
+
+    .input-row:focus-within {
+      border-color: rgba(200, 149, 46, .4);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, .06)
+    }
+
+    #userInput {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: 'Mulish', sans-serif;
+      font-size: 13.5px;
+      resize: none;
+      max-height: 110px;
+      min-height: 24px;
+      line-height: 1.6
+    }
+
+    #userInput::placeholder {
+      color: var(--muted)
+    }
+
+    .send-btn {
+      background: linear-gradient(135deg, #2563eb, #7a5808);
+      border: none;
+      border-radius: 10px;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: bold;
+      transition: all .2s;
+      flex-shrink: 0;
+      box-shadow: 0 3px 12px rgba(37, 99, 235, .25)
+    }
+
+    .send-btn:hover:not(:disabled) {
+      transform: scale(1.08);
+      box-shadow: 0 5px 18px rgba(37, 99, 235, .5)
+    }
+
+    .send-btn:disabled {
+      opacity: .3;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none
+    }
+
+    /* ── REFERENCE PANEL ── */
+    .ref-panel {
+      width: 260px;
+      min-width: 260px;
+      background: var(--s1);
+      border-left: 1px solid var(--b1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden
+    }
+
+    .ref-header {
+      padding: 14px 16px 12px;
+      border-bottom: 1px solid var(--b1)
+    }
+
+    .ref-header span {
+      color: var(--gold2);
+      font-size: 15px;
+      letter-spacing: .02em;
+      font-weight: 500;
+      display: block;
+      margin-bottom: 2px;
+      font-family: 'Cormorant Garamond', serif
+    }
+
+    .ref-header small {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--muted)
+    }
+
+    .ref-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px
+    }
+
+    .ref-body::-webkit-scrollbar {
+      width: 3px
+    }
+
+    .ref-body::-webkit-scrollbar-thumb {
+      background: var(--b2)
+    }
+
+    .ref-card {
+      background: var(--s2);
+      border: 1px solid var(--b1);
+      border-radius: 11px;
+      padding: 13px 14px;
+      margin-bottom: 10px;
+      transition: border-color .2s
+    }
+
+    .ref-card:hover {
+      border-color: var(--b2)
+    }
+
+    .ref-card-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 7px
+    }
+
+    .ref-card-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%
+    }
+
+    .ref-card-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text);
+      letter-spacing: .04em;
+      flex: 1
+    }
+
+    .ref-card-text {
+      font-size: 11.5px;
+      color: var(--dim);
+      line-height: 1.65
+    }
+
+    .ref-card-act {
+      font-size: 9.5px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--muted);
+      margin-top: 6px;
+      letter-spacing: .05em
+    }
+
+    /* ── ERROR BANNER ── */
+    .error-banner {
+      background: rgba(239, 68, 68, .1);
+      border: 1px solid rgba(239, 68, 68, .25);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin: 12px 20px 0;
+      font-size: 12px;
+      color: #f98080;
+      font-family: 'JetBrains Mono', monospace;
+      display: none;
+      letter-spacing: .03em;
+      line-height: 1.6
+    }
+
+    .error-banner.show {
+      display: block
+    }
+
+    /* ── MODALS ── */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, .35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(8px);
+      animation: fadeO .3s ease
+    }
+
+    @keyframes fadeO {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    .modal {
+      background: var(--s1);
+      border: 1px solid var(--b1);
+      border-top: 2px solid var(--gold);
+      border-radius: 20px;
+      width: 90%;
+      max-width: 580px;
+      max-height: 85vh;
+      overflow-y: auto;
+      animation: modalIn .35s ease
+    }
+
+    @keyframes modalIn {
+      from {
+        transform: scale(.96) translateY(12px);
+        opacity: 0
+      }
+
+      to {
+        transform: none;
+        opacity: 1
+      }
+    }
+
+    .modal::-webkit-scrollbar {
+      width: 4px
+    }
+
+    .modal::-webkit-scrollbar-thumb {
+      background: var(--b2)
+    }
+
+    .modal-header {
+      padding: 24px 28px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start
+    }
+
+    .modal-close {
+      background: none;
+      border: 1px solid var(--b1);
+      border-radius: 8px;
+      color: var(--dim);
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: all .2s;
+      flex-shrink: 0
+    }
+
+    .modal-close:hover {
+      border-color: var(--gold);
+      color: var(--gold2)
+    }
+
+    .modal-body {
+      padding: 20px 28px 28px
+    }
+
+    .about-seal {
+      text-align: center;
+      margin-bottom: 20px
+    }
+
+    .about-seal-icon {
+      font-size: 52px;
+      margin-bottom: 10px;
+      filter: drop-shadow(0 4px 14px rgba(37, 99, 235, .25))
+    }
+
+    .about-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--gold2);
+      letter-spacing: .03em;
+      margin-bottom: 4px
+    }
+
+    .about-version {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: .15em;
+      text-transform: uppercase
+    }
+
+    .about-desc {
+      font-size: 13.5px;
+      color: var(--dim);
+      line-height: 1.8;
+      margin-bottom: 20px;
+      padding: 16px;
+      background: var(--s2);
+      border: 1px solid var(--b1);
+      border-radius: 12px
+    }
+
+    .info-block {
+      background: var(--s2);
+      border: 1px solid var(--b1);
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 12px
+    }
+
+    .info-block-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--b1)
+    }
+
+    .info-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 5px 0
+    }
+
+    .info-key {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      color: var(--muted);
+      min-width: 90px;
+      flex-shrink: 0;
+      letter-spacing: .03em;
+      margin-top: 1px
+    }
+
+    .info-val {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.5
+    }
+
+    .info-val strong {
+      color: var(--gold2);
+      font-weight: 600
+    }
+
+    .creator-main {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--goldf);
+      border: 1px solid rgba(37, 99, 235, .18);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 8px
+    }
+
+    .creator-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb, #1e40af);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+      box-shadow: 0 3px 10px rgba(37, 99, 235, .25)
+    }
+
+    .creator-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gold2)
+    }
+
+    .creator-role {
+      font-size: 10.5px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--muted);
+      letter-spacing: .04em;
+      margin-top: 1px
+    }
+
+    .creator-main:hover {
+      border-color: rgba(37, 99, 235, .4);
+      transform: translateY(-1px);
+      transition: all .2s ease;
+    }
+
+    .helper-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 9px;
+      border: 1px solid var(--b1);
+      background: var(--s3);
+      margin-bottom: 6px
+    }
+
+    .helper-av {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--s4);
+      border: 1px solid var(--b2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px
+    }
+
+    .helper-name {
+      font-size: 13px;
+      color: var(--text)
+    }
+
+    .helper-role {
+      font-size: 10px;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: .03em;
+      margin-top: 1px
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 4px
+    }
+
+    .feat-item {
+      background: var(--s3);
+      border: 1px solid var(--b1);
+      border-radius: 9px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px
+    }
+
+    .feat-icon {
+      font-size: 16px;
+      margin-top: 1px
+    }
+
+    .feat-text {
+      font-size: 11.5px;
+      color: var(--dim);
+      line-height: 1.5
+    }
+
+    .feat-text strong {
+      display: block;
+      color: var(--text);
+      font-size: 12px;
+      margin-bottom: 2px
+    }
+
+    .modal-footer-note {
+      margin-top: 16px;
+      padding: 12px 14px;
+      background: rgba(37, 99, 235, .06);
+      border: 1px solid rgba(37, 99, 235, .15);
+      border-radius: 10px;
+      font-size: 11px;
+      color: rgba(200, 149, 46, .7);
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: .04em;
+      text-align: center;
+      line-height: 1.6
+    }
+
+    /* toast */
+    .toast {
+      position: fixed;
+      bottom: 26px;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      background: var(--s3);
+      border: 1px solid var(--gold);
+      color: var(--gold2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      padding: 8px 20px;
+      border-radius: 20px;
+      opacity: 0;
+      transition: all .3s;
+      pointer-events: none;
+      z-index: 2000;
+      letter-spacing: .07em
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0)
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- ══ SIDEBAR ══ -->
+    <div class="sidebar">
+      <div class="logo-block">
+        <div class="logo-row">
+          <div class="logo-emblem">⚖</div>
+          <div>
+            <div class="logo-name">LawyerBot</div>
+            <div class="logo-sub">Kerala Legal AI</div>
+          </div>
+        </div>
+        <div class="logo-tagline">AI-powered legal guidance for Kerala & Indian law</div>
+      </div>
+
+      <div class="nav-label">Practice Areas</div>
+
+      <button class="cat active" onclick="setCategory('civil',this)">
+        <div class="cat-dot civil"></div>
+        <div class="cat-label">
+          <div class="cat-name">Civil Law</div>
+          <div class="cat-hint">Property · Disputes</div>
+        </div>
+      </button>
+      <button class="cat" onclick="setCategory('criminal',this)">
+        <div class="cat-dot crim"></div>
+        <div class="cat-label">
+          <div class="cat-name">Criminal Law</div>
+          <div class="cat-hint">IPC · BNSS · Kerala</div>
+        </div>
+      </button>
+      <button class="cat" onclick="setCategory('motor',this)">
+        <div class="cat-dot motor"></div>
+        <div class="cat-label">
+          <div class="cat-name">Motor Vehicles</div>
+          <div class="cat-hint">MVA · Kerala MVD</div>
+        </div>
+      </button>
+      <button class="cat" onclick="setCategory('constitution',this)">
+        <div class="cat-dot const"></div>
+        <div class="cat-label">
+          <div class="cat-name">Constitution</div>
+          <div class="cat-hint">Indian Constitution</div>
+        </div>
+      </button>
+      <button class="cat" onclick="setCategory('cyber',this)">
+        <div class="cat-dot cyber"></div>
+        <div class="cat-label">
+          <div class="cat-name">Cyber & IT Law</div>
+          <div class="cat-hint">IT Act · Cyber crimes</div>
+        </div>
+      </button>
+      <button class="cat" onclick="setCategory('custom',this)">
+        <div class="cat-dot custom"></div>
+        <div class="cat-label">
+          <div class="cat-name">Custom Integration</div>
+          <div class="cat-hint">Org · University rules</div>
+        </div>
+      </button>
+
+      <div class="sidebar-footer">
+        <button class="sf-btn" onclick="clearChat()"><span>⌫</span> Clear Chat</button>
+        <button class="sf-btn" onclick="exportChat()"><span>↓</span> Export Chat</button>
+        <button class="sf-btn" onclick="showAbout()"><span>ℹ</span> About LawyerBot</button>
+      </div>
+    </div>
+
+    <!-- ══ MAIN ══ -->
+    <div class="main">
+      <div class="topbar">
+        <div class="topic-badge">
+          <div class="topic-pulse"></div>
+          <span class="topic-text" id="topicLabel">lawyerbot AI</span>
+        </div>
+        <div class="topbar-actions">
+          <button class="tb-btn" onclick="clearChat()">New Chat</button>
+          <button class="tb-btn" onclick="exportChat()">Export ↓</button>
+          <button class="tb-btn" onclick="showAbout()">About</button>
+        </div>
+      </div>
+
+      <!-- error banner -->
+      <div class="error-banner" id="errorBanner"></div>
+
+      <div class="split">
+        <!-- Chat panel -->
+        <div class="chat-panel">
+          <div class="messages" id="messages">
+            <div class="welcome" id="welcomeCard">
+              <div class="welcome-icon">⚖️</div>
+              <h2>Welcome to LawyerBot</h2>
+              <p>Your AI legal assistant for <strong style="color:var(--gold2)">Kerala Civil, Criminal, Motor Vehicle,
+                  Constitution</strong> and <strong style="color:var(--gold2)">Cyber & IT Laws</strong>.<br />Select a
+                category and ask your legal question below.</p>
+              <div class="welcome-chips" id="welcomeChips"></div>
+            </div>
+          </div>
+
+          <div class="sug-bar" id="sugBar"></div>
+
+          <div class="input-area">
+            <div class="disclaimer">⚠ <em>LawyerBot provides general legal information only — not professional legal
+                advice. Consult a licensed advocate for your specific case.</em></div>
+            <div class="input-row">
+              <textarea id="userInput" placeholder="Ask a legal question…" rows="1" onkeydown="handleKey(event)"
+                oninput="autoResize(this)"></textarea>
+              <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reference panel -->
+        <div class="ref-panel">
+          <div class="ref-header">
+            <span>Law Reference</span>
+            <small>Quick legal references</small>
+          </div>
+          <div class="ref-body" id="refBody"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ABOUT MODAL ══ -->
+  <div class="overlay" id="aboutModal" style="display:none" onclick="closeAbout(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div></div>
+        <button class="modal-close" onclick="closeAbout()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="about-seal">
+          <div class="about-seal-icon">⚖️</div>
+          <div class="about-title">LawyerBot</div>
+          <div class="about-version">Kerala Legal AI Assistant · v2.0 · 2025</div>
+        </div>
+
+        <div class="about-desc">
+          LawyerBot is an AI-powered legal chatbot built using Retrieval Augmented Generation (RAG). It answers
+          questions on Kerala Civil Law, Criminal Law, Motor Vehicle regulations, the Indian Constitution, Cyber & IT
+          Law, and supports Custom Integration — allowing universities, colleges, and organizations to embed their own
+          institutional rules for context-aware legal guidance.
+        </div>
+
+        <div class="info-block">
+          <div class="info-block-label">Project Information</div>
+          <div class="info-row"><span class="info-key">Project</span><span class="info-val"><strong>
+                LawyerBot</strong></span></div>
+          <div class="info-row"><span class="info-key">Purpose</span><span class="info-val">AI-assisted legal
+              information and research</span></div>
+          <div class="info-row"><span class="info-key">Coverage</span><span class="info-val">Kerala &amp; Indian
+              Law</span></div>
+          <div class="info-row"><span class="info-key">Version</span><span class="info-val">2.0</span></div>
+        </div>
+
+        <div class="info-block">
+          <div class="info-block-label">Project Creators</div>
+
+          <div class="creator-main">
+            <div class="creator-badge">👨‍💻</div>
+            <div>
+              <div class="creator-name">xxxx</div>
+              <div class="creator-role">Project Creator · Lead Developer</div>
+            </div>
+          </div>
+
+          <div class="creator-main">
+            <div class="creator-badge">👨‍💻</div>
+            <div>
+              <div class="creator-name">MEMBER 2</div>
+              <div class="creator-role">Project Creator · Developer</div>
+            </div>
+          </div>
+
+          <div class="creator-main">
+            <div class="creator-badge">👨‍💻</div>
+            <div>
+              <div class="creator-name">MEMBER 3</div>
+              <div class="creator-role">Project Creator · Research &amp; Development</div>
+            </div>
+          </div>
+
+          <div class="creator-main">
+            <div class="creator-badge">👨‍💻</div>
+            <div>
+              <div class="creator-name">MEMBER 4</div>
+              <div class="creator-role">Project Creator · Testing &amp; Integration</div>
+            </div>
+          </div>
+
+          <div class="info-block">
+            <div class="info-block-label">Tech Stack</div>
+            <div class="info-row"><span class="info-key">Retrieval</span><span class="info-val">FAISS · all-MiniLM-L6-v2
+                embeddings</span></div>
+            <div class="info-row"><span class="info-key">LLM</span><span class="info-val">Groq API · OpenAI GPT-OSS
+                120B</span>
+            </div>
+            <div class="info-row"><span class="info-key">Backend</span><span class="info-val">FastAPI (Python)</span>
+            </div>
+            <div class="info-row"><span class="info-key">Data</span><span class="info-val">pdfplumber ·
+                sentence-transformers</span></div>
+          </div>
+
+          <div class="info-block">
+            <div class="info-block-label">Key Features</div>
+            <div class="feature-grid">
+              <div class="feat-item"><span class="feat-icon">🏛️</span>
+                <div class="feat-text"><strong>Multi-domain Law</strong>Civil, Criminal, Motor, Constitution & Cyber
+                </div>
+              </div>
+              <div class="feat-item"><span class="feat-icon">🔌</span>
+                <div class="feat-text"><strong>Custom Integration</strong>Plug in university or org rules</div>
+              </div>
+              <div class="feat-item"><span class="feat-icon">🔍</span>
+                <div class="feat-text"><strong>RAG Pipeline</strong>FAISS retrieves exact law sections</div>
+              </div>
+              <div class="feat-item"><span class="feat-icon">📤</span>
+                <div class="feat-text"><strong>Export Chat</strong>Save your legal queries as .txt</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer-note">
+            ⚠ LawyerBot is an academic project providing general legal information only.<br />
+            It is not a substitute for advice from a licensed advocate.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+      // ══ BACKEND URL ══
+      const BACKEND = 'http://localhost:8000';
+
+      // ══ CATEGORY DATA ══
+      const CATS = {
+        civil: {
+          label: 'Kerala Civil Law', tagClass: 'tag-civil', tagText: 'Civil Law', color: '#3b82f6',
+          suggestions: ['How to file a civil suit in Kerala?', 'Property dispute resolution Kerala', 'Kerala Rent Control Act explained', 'Land registration process Kerala'],
+          refs: [
+            { title: 'Code of Civil Procedure', text: 'Governs civil court procedures in Kerala. Key sections include Order VII (plaint) and Order VIII (written statement).', act: 'CPC 1908' },
+            { title: 'Kerala Land Reforms Act', text: 'Regulates land ownership, tenancy rights and ceiling limits on land holdings in Kerala.', act: 'KLRA 1963' },
+            { title: 'Kerala Rent Control Act', text: 'Protects tenants from arbitrary eviction and regulates fair rent across Kerala.', act: 'KRCA 1965' },
+            { title: 'Limitation Act', text: 'Sets time limits for filing civil suits. General limitation is 3 years for most civil matters.', act: 'Limitation Act 1963' },
+          ]
+        },
+        criminal: {
+          label: 'Kerala Criminal Law', tagClass: 'tag-crim', tagText: 'Criminal Law', color: '#ef4444',
+          suggestions: ['FIR procedure in Kerala police', 'What are bail conditions in Kerala?', 'Section 498A explained', 'Cognizable vs non-cognizable offences'],
+          refs: [
+            { title: 'Bharatiya Nyaya Sanhita', text: 'Replaced IPC in 2024. Covers all major criminal offences including murder (S.101), theft (S.303), fraud (S.316).', act: 'BNS 2023' },
+            { title: 'BNSS (New CrPC)', text: 'Bharatiya Nagarik Suraksha Sanhita replaces CrPC. Governs arrest, bail, and trial procedures.', act: 'BNSS 2023' },
+            { title: 'Kerala Police Act', text: 'Governs the functioning of Kerala Police, complaint procedures and police powers.', act: 'KPA 2011' },
+            { title: 'Prevention of Corruption', text: 'Governs offences related to bribery and corruption by public servants.', act: 'PCA 1988' },
+          ]
+        },
+        motor: {
+          label: 'Motor Vehicle Laws Kerala', tagClass: 'tag-motor', tagText: 'Motor Vehicles', color: '#f97316',
+          suggestions: ['Kerala traffic fine for overspeeding', 'Driving licence renewal process', 'Vehicle fitness certificate renewal', 'Accident claim procedure Kerala'],
+          refs: [
+            { title: 'Motor Vehicles Act', text: 'Central law governing licensing, registration, insurance, and traffic rules across India including Kerala.', act: 'MVA 1988' },
+            { title: 'Kerala Motor Vehicles Rules', text: 'State-specific rules for vehicle registration, fitness tests, and licensing in Kerala.', act: 'KMVR 1989' },
+            { title: 'Third Party Insurance', text: 'Mandatory under Section 146 MVA. Covers third party injury or death in road accidents.', act: 'MVA S.146' },
+            { title: 'MACT Claims', text: 'Motor Accidents Claims Tribunal handles compensation claims for road accident victims.', act: 'MVA S.165' },
+          ]
+        },
+        constitution: {
+          label: 'Indian Constitution', tagClass: 'tag-const', tagText: 'Constitution', color: '#22c55e',
+          suggestions: ['Article 21 Right to Life explained', 'How to file a writ petition?', 'Fundamental Rights under Part III', 'What is a PIL in India?'],
+          refs: [
+            { title: 'Part III — Fundamental Rights', text: 'Articles 12–35 guarantee rights including equality (A.14), freedom (A.19), life (A.21), and education (A.21A).', act: 'Arts. 12–35' },
+            { title: 'Article 32 & 226', text: 'A.32 allows Supreme Court remedies; A.226 allows High Court writ petitions for rights enforcement.', act: 'Constitution' },
+            { title: 'Directive Principles', text: 'Part IV Articles 36–51 guide state policy on welfare, equal pay, legal aid, and environment.', act: 'Arts. 36–51' },
+            { title: 'Article 21 — Right to Life', text: 'Includes right to livelihood, health, education, and privacy per landmark SC judgments.', act: 'Art. 21' },
+          ]
+        },
+        cyber: {
+          label: 'Cyber & IT Law', tagClass: 'tag-cyber', tagText: 'Cyber & IT', color: '#a855f7',
+          suggestions: ['What is a cybercrime under IT Act?', 'Online fraud reporting procedure', 'Data privacy laws in India', 'Social media defamation laws'],
+          refs: [
+            { title: 'Information Technology Act', text: 'Primary cyber law. Covers cybercrime (S.66), data protection (S.43A), hacking, and obscenity.', act: 'IT Act 2000' },
+            { title: 'IT Amendment Act', text: 'Strengthens cybercrime provisions and introduces intermediary liability rules (S.79).', act: 'ITAA 2008' },
+            { title: 'DPDP Act 2023', text: 'Digital Personal Data Protection Act governs collection and use of personal data by organisations.', act: 'DPDP 2023' },
+            { title: 'Cyber Stalking', text: 'Covered under IT Act S.66E, S.67 and BNS S.78. Report to Kerala Cyber Cell.', act: 'IT Act & BNS' },
+          ]
+        },
+        custom: {
+          label: 'Custom Integration', tagClass: 'tag-custom', tagText: 'Custom', color: '#06b6d4',
+          suggestions: ['How does custom integration work?', 'Can universities add their own rules?', 'What data can organisations add?', 'Integration use cases'],
+          refs: [
+            { title: 'Custom Integration', text: 'Universities, colleges, and companies can insert their own institutional rules and policies into LawyerBot.', act: 'LawyerBot Feature' },
+            { title: 'Use Cases', text: 'University exam rules, company HR policies, hostel regulations, and college disciplinary codes.', act: 'Examples' },
+            { title: 'How It Works', text: 'Organisation provides their rulebook or policy data. LawyerBot AI uses it to answer context-specific queries.', act: 'Architecture' },
+            { title: 'Coming Soon', text: 'Full Custom Integration module is under active development as part of the LawyerBot roadmap.', act: 'Roadmap' },
+          ]
+        }
+      };
+
+      // ══ STATE ══
+      let activeCat = 'civil';
+      let history = [];
+      let loading = false;
+
+      // ══ INIT ══
+      window.onload = () => {
+        updateCategory();
+        document.getElementById('userInput').focus();
+        checkBackend();
+      };
+
+      // Check if backend is running on load
+      async function checkBackend() {
+        try {
+          const res = await fetch(`${BACKEND}/`, { signal: AbortSignal.timeout(3000) });
+          if (res.ok) hideError();
+        } catch {
+          showError('⚠ Backend server is not running. Start it with: <strong>uvicorn api:app --reload</strong> — then refresh this page.');
+        }
+      }
+
+      function showError(msg) {
+        const el = document.getElementById('errorBanner');
+        el.innerHTML = msg; el.classList.add('show');
+      }
+      function hideError() {
+        document.getElementById('errorBanner').classList.remove('show');
+      }
+
+      // ══ CATEGORY ══
+      function setCategory(cat, btn) {
+        activeCat = cat;
+        document.querySelectorAll('.cat').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        updateCategory();
+      }
+
+      function updateCategory() {
+        const c = CATS[activeCat];
+        document.getElementById('topicLabel').textContent = "LawyerBot AI";
+        renderSuggestions();
+        renderRefs();
+        const wc = document.getElementById('welcomeChips');
+        if (wc) wc.innerHTML = c.suggestions.map(s =>
+          `<button class="wchip" onclick="askQ(this)">${s}</button>`).join('');
+      }
+
+      function renderSuggestions() {
+        document.getElementById('sugBar').innerHTML = CATS[activeCat].suggestions.map(s =>
+          `<button class="sug" onclick="askQ(this)">${s}</button>`).join('');
+      }
+
+      function renderRefs() {
+        const color = CATS[activeCat].color;
+        document.getElementById('refBody').innerHTML = CATS[activeCat].refs.map(r => `
+    <div class="ref-card">
+      <div class="ref-card-top">
+        <div class="ref-card-dot" style="background:${color};box-shadow:0 0 5px ${color}"></div>
+        <div class="ref-card-title">${r.title}</div>
+      </div>
+      <div class="ref-card-text">${r.text}</div>
+      <div class="ref-card-act">${r.act}</div>
+    </div>`).join('');
+      }
+
+      // ══ MESSAGING ══
+      function getTime() {
+        return new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+      }
+
+      function addMessage(role, content, sources, chunksRetrieved) {
+        // Remove welcome card on first message
+        const wc = document.getElementById('welcomeCard');
+        if (wc) wc.remove();
+
+        const msgs = document.getElementById('messages');
+        const c = CATS[activeCat];
+        const div = document.createElement('div');
+        div.className = `msg ${role}`;
+
+        const avatar = role === 'user' ? '👤' : '⚖';
+        const name = role === 'user' ? 'You' : 'LawyerBot';
+        const tagHtml = role === 'bot'
+          ? `<span class="cat-tag ${c.tagClass}">LAWYERBOT AI</span><br>` : '';
+
+        // Escape HTML
+        const esc = content
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(/\n/g, '<br>');
+
+        // Sources line (only for bot messages with sources)
+        let sourcesHtml = '';
+        if (role === 'bot' && sources && sources.length > 0) {
+          sourcesHtml = `<div class="sources-line">📄 <span>Sources:</span> ${sources.join(', ')} · ${chunksRetrieved} chunks retrieved</div>`;
+        }
+
+        const rawText = content.replace(/`/g, '\\`').replace(/\$/g, '\\$');
+
+        div.innerHTML = `
+    <div class="av">${avatar}</div>
+    <div class="msg-body">
+      <div class="msg-meta">${name} · ${getTime()}</div>
+      <div class="bubble">
+        ${tagHtml}${esc}
+        ${sourcesHtml}
+        <div class="bubble-actions">
+          <button class="bact" onclick="copyMsg(this,\`${rawText}\`)">Copy</button>
+        </div>
+      </div>
+    </div>`;
+        msgs.appendChild(div);
+        msgs.scrollTop = msgs.scrollHeight;
+      }
+
+      function showTyping() {
+        const msgs = document.getElementById('messages');
+        const d = document.createElement('div');
+        d.className = 'typing-wrap'; d.id = 'typingInd';
+        d.innerHTML = `<div class="typing-av">⚖</div>
+    <div class="typing-bub"><span></span><span></span><span></span></div>`;
+        msgs.appendChild(d);
+        msgs.scrollTop = msgs.scrollHeight;
+      }
+      function hideTyping() { const t = document.getElementById('typingInd'); if (t) t.remove(); }
+
+      // ══ SEND MESSAGE ══
+      async function sendMessage(text) {
+        const input = document.getElementById('userInput');
+        const msg = (text || input.value).trim();
+        if (!msg || loading) return;
+
+        input.value = '';
+        input.style.height = 'auto';
+        hideError();
+
+        addMessage('user', msg);
+        history.push({ role: 'user', content: msg });
+
+        loading = true;
+        document.getElementById('sendBtn').disabled = true;
+        showTyping();
+
+        try {
+          const res = await fetch(`${BACKEND}/chat`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              category: activeCat,
+              messages: history        // full history including current question
+            })
+          });
+
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.detail || `Server error ${res.status}`);
+          }
+
+          const data = await res.json();
+          hideTyping();
+          addMessage('bot', data.reply, data.sources, data.chunks_retrieved);
+          history.push({ role: 'assistant', content: data.reply });
+
+        } catch (err) {
+          hideTyping();
+          let errMsg = '';
+          if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError') || err.message.includes('timeout')) {
+            errMsg = '⚠ Cannot reach the backend.\n\nStart it with:\n  uvicorn api:app --reload\n\nThen try again.';
+            showError('⚠ Backend not reachable. Run: <strong>uvicorn api:app --reload</strong>');
+          } else if (err.message.includes('401')) {
+            errMsg = '⚠ Invalid Groq API key. Check your .env file.';
+          } else if (err.message.includes('429')) {
+            errMsg = '⚠ Rate limit reached. Please wait a moment and try again.';
+          } else {
+            errMsg = `⚠ Error: ${err.message}`;
+          }
+          addMessage('bot', errMsg);
+        }
+
+        loading = false;
+        document.getElementById('sendBtn').disabled = false;
+        document.getElementById('userInput').focus();
+      }
+
+      function handleKey(e) {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+      }
+      function autoResize(el) {
+        el.style.height = 'auto';
+        el.style.height = Math.min(el.scrollHeight, 110) + 'px';
+      }
+      function askQ(btn) { sendMessage(btn.textContent); }
+
+      // ══ ACTIONS ══
+      function clearChat() {
+        history = [];
+        const msgs = document.getElementById('messages');
+        msgs.innerHTML = '';
+        const wc = document.createElement('div');
+        wc.className = 'welcome'; wc.id = 'welcomeCard';
+        wc.innerHTML = `<div class="welcome-icon">⚖️</div><h2>Chat Cleared</h2>
+    <p>Start a new legal query below.</p>
+    <div class="welcome-chips" id="welcomeChips"></div>`;
+        msgs.appendChild(wc);
+        updateCategory();
+        hideError();
+        showToast('Chat cleared');
+      }
+
+      function exportChat() {
+        if (!history.length) { showToast('Nothing to export'); return; }
+        const lines = history.map(m => `[${m.role.toUpperCase()}]\n${m.content}`).join('\n\n─────────────────\n\n');
+        const full = `LAWYERBOT — Legal Chat Export
+Category  : ${CATS[activeCat].label}
+Date      : ${new Date().toLocaleString('en-IN')}
+Project   : LawyerBot — AI Legal Assistant
+
+${'═'.repeat(55)}
+
+${lines}
+
+${'═'.repeat(55)}
+
+DISCLAIMER: General legal information only.
+Consult a licensed advocate for specific legal advice.
+
+Project Creators: xxxx, MEMBER 2, MEMBER 3, MEMBER 4`;
+
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([full], { type: 'text/plain' }));
+        a.download = `lawyerbot-${activeCat}-${Date.now()}.txt`;
+        a.click();
+        showToast('Exported successfully');
+      }
+
+      function copyMsg(btn, text) {
+        navigator.clipboard.writeText(text);
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy', 1500);
+        showToast('Copied to clipboard');
+      }
+
+      function showAbout() { document.getElementById('aboutModal').style.display = 'flex'; }
+      function closeAbout(e) {
+        if (!e || e.target === document.getElementById('aboutModal'))
+          document.getElementById('aboutModal').style.display = 'none';
+      }
+
+      function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg; t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2200);
+      }
+    </script>
+</body>
+
+</html>
